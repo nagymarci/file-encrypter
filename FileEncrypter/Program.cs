@@ -23,25 +23,10 @@ namespace FileEncrypter
             }
 
             Console.WriteLine("Give encryption key: ");
-            //var encryptionKey = Console.ReadLine();
             var encryptionKey = ReadEncryptionKey();
-            //Console.WriteLine("Give encryption key again: ");
-            /*using (var encryptionKeyAgain = ReadEncryptionKey())
-            {
-                if (!encryptionKey.ToString().Equals(encryptionKeyAgain.ToString()))
-                {
-                    Console.WriteLine("not matching string");
-                    Console.ReadKey(true);
-                    return;
-                }
-            }*/
-            /*var encryptionKeyAgain = ReadEncryptionKey();
-            if (string.IsNullOrWhiteSpace(encryptionKey) || !encryptionKey.Equals(encryptionKeyAgain))
-            {
-                Console.WriteLine("not matching or empty string");
-                Console.ReadKey(true);
-                return;
-            }*/
+
+            var fileCrypter = new FileCrypter(new NetCryptography());
+            fileCrypter.Encrypt(encryptionKey, CommandLineParser.InputFile, CommandLineParser.OutputFile);
 
             Console.ReadKey(true);
         }
