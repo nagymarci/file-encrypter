@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -25,7 +26,7 @@ namespace FileEncrypter
             Console.WriteLine("Give encryption key: ");
             var encryptionKey = ReadEncryptionKey();
 
-            var fileCrypter = new FileCrypter(new NetCryptography());
+            var fileCrypter = new FileCrypter(new NetCryptography(), new FileSystem());
             fileCrypter.Encrypt(encryptionKey, CommandLineParser.InputFile, CommandLineParser.OutputFile);
 
             Console.ReadKey(true);

@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace FileEncrypter
 {
-    interface ICryptography
+    public interface ICryptography
     {
         byte[] HashPassword(string password);
+        byte[] Encrypt(byte[] encryptionKey, byte[] input);
+        byte[] Decrypt(byte[] encryptionKey, byte[] input);
     }
 }

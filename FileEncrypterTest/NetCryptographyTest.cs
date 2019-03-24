@@ -13,19 +13,50 @@ namespace FileEncrypterTest
         [TestMethod]
         public void TestPasswordHash01()
         {
-            string pw = "hello";
-            byte[] expectedHash = Convert.FromBase64String("tpw+CunAbADjXB6+o/Mi19MtH5/x5oYchlCvcX8PJ24=");
+            string pw = "password";
+            byte[] expectedHash = Convert.FromBase64String("cRp0Qw+CnmJhn2Spvf0e7DC60E4Q9rCGwAsbhZn8v9w=");
             var result = netCryptography.HashPassword(pw);
-            CollectionAssert.Equals(expectedHash, result);
+            CollectionAssert.AreEqual(expectedHash, result);
         }
 
         [TestMethod]
         public void TestPasswordHash02()
         {
             string pw = "ThisIsMyP@s$wOrd!";
-            byte[] expectedHash = Convert.FromBase64String("zYmIc+3f6/fVYFttqDV5DEAib324Ji7XlY/3FwEJSBU=");
+            byte[] expectedHash = Convert.FromBase64String("hjiKlYOLVJbkM4yeGfZSQLbxz8RVFggYHVX6TXCx8ww=");
             var result = netCryptography.HashPassword(pw);
-            CollectionAssert.Equals(expectedHash, result);
+            var r = Convert.ToBase64String(result);
+            CollectionAssert.AreEqual(expectedHash, result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestPasswordHash_EmptyInput()
+        {
+            string pw = "";
+            var result = netCryptography.HashPassword(pw);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestPasswordHash_NullInput()
+        {
+            string pw = null;
+            var result = netCryptography.HashPassword(pw);
+        }
+
+        [TestMethod]
+        public void TestEncryption()
+        {
+            string inputString = "Hello world!";
+            byte[] encryptionKey = Convert.FromBase64String("hjiKlYOLVJbkM4yeGfZSQLbxz8RVFggYHVX6TXCx8ww=");
+            byte[] input = ASCIIEncoding.ASCII.GetBytes(inputString);
+            byte[] encryptedInput = netCryptography.Encrypt(encryptionKey, input);
+            byte[] decryptedInput = netCryptography.Decrypt(encryptionKey, encryptedInput);
+            string output = ASCIIEncoding.ASCII.GetString(decryptedInput);
+
+            CollectionAssert.AreEqual(input, decryptedInput);
+            Assert.AreEqual(inputString, output);
         }
     }
 }
