@@ -22,31 +22,55 @@ namespace FileEncrypter
             fileSystem = fs;
         }
 
-        public void Encrypt(string password, string inputFile, string outFilePath)
+        public bool Encrypt(string password, string inputFile, string outFilePath)
         {
-            var encryptionKey = cryptography.HashPassword(password);
-            var fileContent = fileSystem.File.ReadAllBytes(inputFile);
-            string filename = fileSystem.Path.GetFileName(inputFile);
-            var fileNameBytes = Encoding.ASCII.GetBytes(filename);
-            var fileContentWithFileName = BitConverter.GetBytes(fileNameBytes.Length);
-            fileContentWithFileName = fileContentWithFileName.Concat(fileNameBytes).ToArray();
-            fileContentWithFileName = fileContentWithFileName.Concat(fileContent).ToArray();
+            try
+            {
+                var encryptionKey = cryptography.HashPassword(password);
+                var fileContent = fileSystem.File.ReadAllBytes(inputFile);
+                string filename = fileSystem.Path.GetFileName(inputFile);
+                var fileNameBytes = Encoding.ASCII.GetBytes(filename);
+                var fileContentWithFileName = BitConverter.GetBytes(fileNameBytes.Length);
+                fileContentWithFileName = fileContentWithFileName.Concat(fileNameBytes).ToArray();
+                fileContentWithFileName = fileContentWithFileName.Concat(fileContent).ToArray();
 
-            var encryptedContent = cryptography.Encrypt(encryptionKey, fileContentWithFileName);
-            fileSystem.File.WriteAllBytes(fileSystem.Path.Combine(outFilePath, filename + Constants.DefaultFileExtension), encryptedContent);
+                var encryptedContent = cryptography.Encrypt(encryptionKey, fileContentWithFileName);
+                if (!fileSystem.Directory.Exists(outFilePath))
+                {
+                    fileSystem.Directory.CreateDirectory(outFilePath);
+                }
+                fileSystem.File.WriteAllBytes(fileSystem.Path.Combine(outFilePath, filename + Constants.DefaultFileExtension), encryptedContent);
+            } catch (Exception e)
+            {
+                Console.Write($"Failed to encrypt file {inputFile}." + e);
+                return false;
+            }
+            return true;
         }
 
-        public void Decrypt(string password, string inputFile, string outFilePath)
+        public bool Decrypt(string password, string inputFile, string outFilePath)
         {
-            var encryptionKey = cryptography.HashPassword(password);
-            var fileContent = fileSystem.File.ReadAllBytes(inputFile);
+            try
+            {
+                var encryptionKey = cryptography.HashPassword(password);
+                var fileContent = fileSystem.File.ReadAllBytes(inputFile);
 
-            var decryptedContent = cryptography.Decrypt(encryptionKey, fileContent);
-            int fileNameSize = BitConverter.ToInt32(decryptedContent, 0);
-            string filename = Encoding.ASCII.GetString(decryptedContent, sizeof(int), fileNameSize);
-            byte[] content = new byte[decryptedContent.Length - fileNameSize - sizeof(int)];
-            Array.Copy(decryptedContent, fileNameSize + sizeof(int), content, 0, content.Length);
-            fileSystem.File.WriteAllBytes(fileSystem.Path.Combine(outFilePath, filename), content);
+                var decryptedContent = cryptography.Decrypt(encryptionKey, fileContent);
+                int fileNameSize = BitConverter.ToInt32(decryptedContent, 0);
+                string filename = Encoding.ASCII.GetString(decryptedContent, sizeof(int), fileNameSize);
+                byte[] content = new byte[decryptedContent.Length - fileNameSize - sizeof(int)];
+                Array.Copy(decryptedContent, fileNameSize + sizeof(int), content, 0, content.Length);
+                if (!fileSystem.Directory.Exists(outFilePath))
+                {
+                    fileSystem.Directory.CreateDirectory(outFilePath);
+                }
+                fileSystem.File.WriteAllBytes(fileSystem.Path.Combine(outFilePath, filename), content);
+            } catch (Exception e)
+            {
+                Console.Write($"Failed to decrypt file {inputFile}. " + e);
+                return false;
+            }
+            return true;
         }
     }
 }

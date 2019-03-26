@@ -71,15 +71,9 @@ namespace FileEncrypter
 
             byte[] salt = Constants.DefaultSaltBytes;
             byte[] encryptionKey = null;
-            try
+            using (Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, salt, Constants.DefaultIterations, HashAlgorithmName.SHA256))
             {
-                using (Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(password, salt, Constants.DefaultIterations, HashAlgorithmName.SHA256))
-                {
-                    encryptionKey = key.GetBytes(32);
-                }
-            } catch (Exception e)
-            {
-                Console.WriteLine("Error ", e);
+                encryptionKey = key.GetBytes(32);
             }
 
             return encryptionKey;
