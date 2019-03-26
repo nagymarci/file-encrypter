@@ -41,8 +41,7 @@ namespace FileEncrypterTest
         private Mock_Cryptography mock_Cryptography = new Mock_Cryptography();
         private MockFileSystem mockFileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
         {
-            {@"C:\input.txt", new MockFileData(Mock_Cryptography.DecryptedText) },
-            {@"C:\output\placeholder", new MockFileData(Mock_Cryptography.DecryptedText) }
+            {@"C:\input.txt", new MockFileData(Mock_Cryptography.DecryptedText) }
         });
         private FileCrypter fileCrypter;
 
@@ -59,12 +58,12 @@ namespace FileEncrypterTest
             var fileNameBytes = Encoding.ASCII.GetBytes(filename);
             var fileContentWithFileName = BitConverter.GetBytes(fileNameBytes.Length);
             fileContentWithFileName = fileContentWithFileName.Concat(fileNameBytes).ToArray();
-            fileContentWithFileName = fileContentWithFileName.Concat(Mock_Cryptography.EncryptedBytes).ToArray();
+            fileContentWithFileName = fileContentWithFileName.Concat(Mock_Cryptography.DecryptedBytes).ToArray();
             mock_Cryptography.FileContent = fileContentWithFileName;
             fileCrypter.Decrypt("password", @"C:\output\input.txt.fenc", @"C:\output");
             Assert.IsTrue(mockFileSystem.FileExists(@"C:\output\input.txt"));
             var filecontent = mockFileSystem.File.ReadAllBytes(@"C:\output\input.txt");
-            //CollectionAssert.AreEqual(filecontent, Mock_Cryptography.DecryptedBytes);
+            CollectionAssert.AreEqual(filecontent, Mock_Cryptography.DecryptedBytes);
         }
     }
 }
