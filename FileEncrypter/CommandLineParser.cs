@@ -15,7 +15,7 @@ namespace FileEncrypter
 
         public static bool Encrypt { get; private set; } = true;
         public static string InputFile { get; private set; } = null;
-        public static string OutputFile { get; private set; } = null;
+        public static string OutputFolder { get; private set; } = null;
 
         public static void Parse(string[] args)
         {
@@ -36,15 +36,15 @@ namespace FileEncrypter
                     InputFile = arg.Split("=".ToCharArray())[1];
                 }
 
-                if (arg.StartsWith("-o=") || arg.StartsWith("--outfile=") || arg.StartsWith("OutFile="))
+                if (arg.StartsWith("-o=") || arg.StartsWith("--outfile=") || arg.StartsWith("OutFolder="))
                 {
-                    OutputFile = arg.Split("=".ToCharArray())[1];
+                    OutputFolder = arg.Split("=".ToCharArray())[1];
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(InputFile) || string.IsNullOrWhiteSpace(OutputFile))
+            if (string.IsNullOrWhiteSpace(InputFile) || string.IsNullOrWhiteSpace(OutputFolder))
             {
-                throw new ArgumentParseException("Input or output filename is empty");
+                throw new ArgumentParseException("Input or output is empty");
             }
         }
     }

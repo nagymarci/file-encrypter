@@ -27,7 +27,14 @@ namespace FileEncrypter
             var encryptionKey = ReadEncryptionKey();
 
             var fileCrypter = new FileCrypter(new NetCryptography(), new FileSystem());
-            fileCrypter.Encrypt(encryptionKey, CommandLineParser.InputFile, CommandLineParser.OutputFile);
+
+            if (CommandLineParser.Encrypt)
+            {
+                fileCrypter.Encrypt(encryptionKey, CommandLineParser.InputFile, CommandLineParser.OutputFolder);
+            } else
+            {
+                fileCrypter.Decrypt(encryptionKey, CommandLineParser.InputFile, CommandLineParser.OutputFolder);
+            }
 
             Console.ReadKey(true);
         }
